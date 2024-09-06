@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mohamed Morsi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+        }
+        .quiz-container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            text-align: center;
+        }
+        .input-container {
+            margin: 20px 0;
+        }
+        input[type="text"] {
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            font-size: 18px;
+            margin-top: 10px;
+        }
+        .score {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h2 id="question">Was ist das Wortarbeitsprogramm?</h2>
+    <p id="word"></p>
+    <div class="input-container">
+        <input type="text" id="userInput" placeholder="Geben Sie den Artikel ein (der, die, das)">
+        <button onclick="checkAnswer()">Antworten</button>
+    </div>
+    <p id="result" class="result"></p>
+    <p id="score" class="result"></p>
+</div>
+
+<script>
+    const dictionary = {
+        "Stadt": "die", "Termin": "der", "Frage": "die", "Achtung": "die", "Firma": "die",
+        "Zeit": "die", "Stress": "der", "See": "der", "Produkt": "das", "Ring": "der",
+        "Foto": "das", "Gruß": "der", "Seife": "die", "Geldbörse": "die", "Notizbuch": "das",
+        "Formular": "das", "Handy": "das", "Drucker": "der", "Bildschirm": "der", "Stift": "der",
+        "Kalender": "der", "Computer": "der", "Briefmarke": "die", "SMS": "die", "Maus": "die",
+        "Rechnung": "die", "E-Mail": "die", "Feuerzeug": "das", "Bleistifte": "die", "Bleistift": "der",
+        "Fotoapparat": "der", "Kugelschreiber": "der", "Tasche": "die", "Brille": "die", "Flasche": "die",
+        "Bett": "das", "Kette": "die", "Lesen": "das", "Freunde": "die", "Ausstellung": "die",
+        "Café": "das", "Museum": "das", "Restaurant": "das", "Theater": "das", "Radio": "das",
+        "Vormittag": "der", "Mittag": "der", "Lieblingsfilm": "der", "Ausflug": "der", "Hobby": "das",
+        "Musik": "die", "Natur": "die", "Nachmittag": "der", "Abend": "der", "Nacht": "die",
+        "Morgen": "der", "Idee": "die", "Essen": "das", "Fernsehen": "das", "Fleisch": "das",
+        "Ei": "das", "Zitrone": "die", "Zwiebel": "die", "Wurst": "die", "Durst": "der",
+        "Frühstück": "das", "Apfel": "der", "Braten": "der", "Brötchen": "das", "Brot": "das",
+        "Eis": "das", "Fisch": "der", "Käse": "der", "Kartoffel": "die", "Kuchen": "der",
+        "Milch": "die", "Obst": "das", "Orange": "die", "Reis": "der", "Sahne": "die",
+        "Einladung": "die", "Speisekarte": "die", "Bahnhof": "der", "Bahnsteig": "der", "Bus": "der",
+        "Halt": "der", "Haltestelle": "die", "Flughafen": "der", "Straßenbahn": "die", "Verkehrsmittel": "das",
+        "Flugzeug": "das", "Gepäck": "das", "Gleis": "das", "Arbeit": "die", "Hausaufgabe": "die",
+        "Pause": "die", "Zeitung": "die", "Baby": "das", "Fahrrad": "das", "Geschenk": "das",
+        "Paar": "das", "Monat": "der", "Sport": "der", "Wein": "der", "Reise": "die",
+        "letzte Woche": "die", "Bier": "das", "Person": "die", "Frühling": "der", "Neujahr": "das",
+        "Silvester": "das", "Hochzeit": "die", "Ampel": "die", "Brücke": "die", "Mitte": "die",
+        "Stadtmitte": "die", "Polizei": "die", "Post": "die", "Nähe": "die", "Stockwerke": "die",
+        "Vermieter": "der", "Wasser": "das", "Anzeige": "die", "Dusche": "die", "Sitzung": "die",
+        "Lust": "die", "Handtuch": "das", "Internetverbindung": "die"
+    };
+
+    let words = Object.keys(dictionary);
+    let currentIndex = 0;
+    let score = 0;
+    let totalQuestions = words.length;
+
+    function displayNextWord() {
+        if (currentIndex < words.length) {
+            document.getElementById("word").innerText = words[currentIndex];
+            document.getElementById("result").innerText = "";
+            document.getElementById("userInput").value = "";
+        } else {
+            document.getElementById("question").innerText = "Quiz beendet!";
+            document.getElementById("word").innerText = `Ihre Endpunktzahl beträgt ${score} von ${totalQuestions}`;
+            document.getElementById("result").innerText = "Geben Sie 'exit' ein, um das Quiz zu beenden.";
+            document.querySelector(".input-container").style.display = "none";
+        }
+    }
+
+    function checkAnswer() {
+    const userInput = document.getElementById("userInput").value.toLowerCase().trim();
+    const correctAnswer = dictionary[words[currentIndex]];
+
+    console.log("User Input:", userInput); // Debugging line
+    console.log("Correct Answer:", correctAnswer); // Debugging line
+
+    if (userInput === "exit") {
+        document.getElementById("question").innerText = "Good job! \u{1F600}";
+        document.getElementById("word").innerText = `Ihre Endpunktzahl beträgt ${score} von ${totalQuestions}`;
+        document.querySelector(".input-container").style.display = "none";
+    } else if (userInput === correctAnswer) {
+        document.getElementById("result").innerText = `Richtig! Das ist '${correctAnswer}' ${words[currentIndex]}. 🎉`;
+        score++;
+        // Delay the display of the next word to ensure the user sees the result message
+        setTimeout(() => {
+            currentIndex++;
+            displayNextWord();
+        }, 1000); // 1.5 second delay
+    } else {
+        document.getElementById("result").innerText = `Falsch! Das richtige Artikel für '${words[currentIndex]}' ist '${correctAnswer}'. 😎`;
+        // Delay the display of the next word to ensure the user sees the result message
+        setTimeout(() => {
+            currentIndex++;
+            displayNextWord();
+        }, 1500); // 1.5 second delay
+    }
+
+    document.getElementById("score").innerText = `Ihre Punktzahl: ${(score / totalQuestions * 100).toFixed(2)}%`;
+}
+
+
+    // Start the quiz by displaying the first word
+    displayNextWord();
+</script>
+
+</body>
+</html>
