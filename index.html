@@ -139,14 +139,14 @@
         setTimeout(() => {
             currentIndex++;
             displayNextWord();
-        }, 4000); // 4 second delay
+        }, 3500); // 3.5 second delay
     } else {
         document.getElementById("result").innerText = `Falsch! Das richtige Artikel für '${words[currentIndex]}' ist '${correctAnswer}'. 🥹`;
         // Delay the display of the next word to ensure the user sees the result message
         setTimeout(() => {
             currentIndex++;
             displayNextWord();
-        }, 6500); // 6.5 second delay
+        }, 5500); // 5.5 second delay
     }
 
     document.getElementById("score").innerText = `Ihre Punktzahl: ${(score / totalQuestions * 100).toFixed(2)}%`;
